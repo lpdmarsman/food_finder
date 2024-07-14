@@ -22,7 +22,7 @@ services:
       - "6379:6379"
 
   websocket:
-    image: your-websocket-image
+    image: public.ecr.aws/g7m5j3l0/food-finder:latest
     container_name: websocket
     ports:
       - "9000:9000" # Adjust ports as necessary
