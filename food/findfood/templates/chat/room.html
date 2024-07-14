@@ -3,13 +3,35 @@
 <head>
     <meta charset="utf-8"/>
     <title>Chat Room</title>
+    {% load static %}
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhS2ZIKqDWAjkXd30MG58j-LSPV4asKjs&libraries=places,geometry"></script>
+    <link rel="stylesheet" href="{% static 'findfood/css/room.css' %}">
 </head>
 <body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="Send">
-    {{ room_name|json_script:"room-name" }}
+    <div id="map"></div>
+    
+    <div id="searchbox">
+        <input id="search-input" type="text" placeholder="Search for places...">
+        <button id="search-button">Search</button>
+    </div>
+
+    <div id="chatbox">
+       
+        <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+        <input id="chat-message-input" type="text" size="100">
+        <input id="chat-message-submit" type="button" value="Send">
+        {{ room_name|json_script:"room-name" }}
+    </div>
+
+    <script src="{% static 'findfood/javascript/map.js' %}"></script>
     <script>
+        function getCookie(name) {
+            let matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
         const chatSocket = new WebSocket(
@@ -21,8 +43,9 @@
         );
 
         chatSocket.onmessage = function(e) {
+            let username = getCookie('username');
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            document.querySelector('#chat-log').value += (username + ": " + data.message + '\n');
         };
 
         chatSocket.onclose = function(e) {
