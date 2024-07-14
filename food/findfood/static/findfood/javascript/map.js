@@ -63,15 +63,15 @@ function addMarker(location) {
         const place = results[0]; // Get the first result
         const infoWindow = new google.maps.InfoWindow({
           content: `
+            <div><strong>${}
             <div><strong>${place.name}</strong></div>
-            <div>City: ${place.vicinity}</div>
+            <div>Address: ${place.vicinity}</div>
             
         
           `,
         });
         infoWindow.open(map, marker);
       } 
-       
     });
   
     marker.addListener("click", () => {
