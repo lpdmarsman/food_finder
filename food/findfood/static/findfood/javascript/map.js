@@ -55,50 +55,6 @@ document.querySelector('#chat-message-submit').onclick = function(e) {
 };
 
 function initMap() {
-<<<<<<< HEAD
-    // Gets the user geo location, places a marker on it and centers the search result around this geo location
-  if (navigator.geolocation) {
-    
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        
-        const pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-
-        map = new google.maps.Map(document.getElementById("map"), {
-          zoom: 14,
-          center: pos,
-        });
-        // Initial Location
-        const marker = new google.maps.Marker({
-          position: pos,
-          map: map,
-          title: "Your Location",
-        });
-        
-        // Press anywhere on the map to add a marker
-        map.addListener("click", (event) => {
-          addMarker(event.latLng);
-        });
-
-
-        // Search Button to Search the nearest location of what is searched
-        document.getElementById('search-button').addEventListener('click', () => {
-          const query = document.getElementById('search-input').value;
-          searchPlace(query, marker.getPosition(), 1000);
-        });
-
-      },
-      () => {
-        handleLocationError(true, map.getCenter());
-      }
-    );
-    } else {
-        
-        handleLocationError(false, map.getCenter());
-=======
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -133,7 +89,6 @@ function initMap() {
         );
     } else {
         console.log("Browser doesn't support geolocation.");
->>>>>>> origin/howie4
     }
 }
 
@@ -196,28 +151,6 @@ function searchPlace(query, location, radius) {
         radius: radius,
     };
 
-<<<<<<< HEAD
-    // Built in library to search a location by string 
-    service.textSearch(textSearchRequest, (results, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
-        
-        // Locates the nearest place by textSearch 
-        let nearestPlace = findNearestPlace(results, location);
-
-        if (nearestPlace) {
-            addMarker(nearestPlace.geometry.location);
-            map.setCenter(nearestPlace.geometry.location);
-        }
-        } 
-        // Increases the radius by 10000 each time if a place is not found
-        else if (radius < 500000) {
-        searchPlace(query, location, radius + 10000);
-        } else {
-        alert('Place not found. Status: ' + status);
-        }
-    });
-    }
-=======
     service.textSearch(textSearchRequest, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
             let nearestPlace = findNearestPlace(results, location);
@@ -242,7 +175,6 @@ function searchPlace(query, location, radius) {
         }
     });
 }
->>>>>>> origin/howie4
 
 // Computes the nearest distance, this is how it locates the nearest location based on the centered marker
 function findNearestPlace(places, location) {
@@ -255,11 +187,7 @@ function findNearestPlace(places, location) {
             nearestDistance = distance;
             nearestPlace = place;
         }
-<<<<<<< HEAD
-});
-=======
     });
->>>>>>> origin/howie4
 
     return nearestPlace;
 }
