@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const usernameInput = document.getElementById('usernameInput').value;
         if (usernameInput) {
             setCookie('username', usernameInput);
+            window.location.href = "ws/chat.html";
         } else {
             alert('Please enter a username.');
         }
