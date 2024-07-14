@@ -1,0 +1,6 @@
+App library installation requirements.
+The following list are libraries we should have installed for the application to work as intended.
+
+python -m pip install -U channels["daphne"]
+
+python3 -m pip install channels_redis
