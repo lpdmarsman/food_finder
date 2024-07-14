@@ -26,11 +26,14 @@ SECRET_KEY = 'django-insecure-_xc^$7sxzp0ua*5tcl$jav_*7hjxs%(+-2v)2a43q)5)9av0!h
 DEBUG = True
 
 ALLOWED_HOSTS = []
+ASGI_APPLICATION = "food.asgi.application"
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "channels",
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
