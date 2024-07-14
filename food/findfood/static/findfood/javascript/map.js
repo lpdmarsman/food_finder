@@ -2,85 +2,107 @@ let map;
 const markers = [];
 
 function initMap() {
-  const position = { lat: 48.46381157109268, lng: -123.33112714045642 };
+  
+  if (navigator.geolocation) {
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        
+        const pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
 
-  // The map, centered at the initial position
-  map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 14,
-    center: position,
-  });
+        map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 14,
+          center: pos,
+        });
 
-  // Initial marker, positioned at the initial position
-  const marker = new google.maps.Marker({
-    position: position,
-    map: map,
-    title: "Start",
-  });
+        const marker = new google.maps.Marker({
+          position: pos,
+          map: map,
+          title: "Your Location",
+        });
 
-  // Add click event listener to the map for adding markers
-  map.addListener("click", (event) => {
-    addMarker(event.latLng);
-  });
+        map.addListener("click", (event) => {
+          addMarker(event.latLng);
+        });
 
-  document.getElementById('search-button').addEventListener('click', () => {
-    const query = document.getElementById('search-input').value;
-    searchPlace(query, marker.getPosition(), 1000);
-  });
+        document.getElementById('search-button').addEventListener('click', () => {
+          const query = document.getElementById('search-input').value;
+          searchPlace(query, marker.getPosition(), 1000);
+        });
 
-  document.getElementById('coordSearchButton').addEventListener('click', () => {
-    const lat = parseFloat(document.getElementById('latBox').value);
-    const lng = parseFloat(document.getElementById('lngBox').value);
-    if (!isNaN(lat) && !isNaN(lng)) {
-      searchPlace(document.getElementById('search-input').value, new google.maps.LatLng(lat, lng), 1000);
-    } else {
-      alert('Please enter valid coordinates');
-    }
-  });
+      },
+      () => {
+        handleLocationError(true, map.getCenter());
+      }
+    );
+  } else {
+    
+    handleLocationError(false, map.getCenter());
+  }
 }
 
-// Function to add a marker at the clicked location
 function addMarker(location) {
-  const marker = new google.maps.Marker({
-    position: location,
-    map: map,
-  });
-  markers.push(marker);
+    const marker = new google.maps.Marker({
+      position: location,
+      map: map,
+    });
+  
+    markers.push(marker);
+  
+    const service = new google.maps.places.PlacesService(map);
+    const request = {
+      location: location,
+      radius: '50'
+    };
+  
+    service.nearbySearch(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        const place = results[0]; // Get the first result
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div><strong>${}
+            <div><strong>${place.name}</strong></div>
+            <div>Address: ${place.vicinity}</div>
+            
+        
+          `,
+        });
+        infoWindow.open(map, marker);
+      } 
+    });
+  
+    marker.addListener("click", () => {
+      removeMarker(marker);
+    });
+  }
 
-  // Add click event listener to the marker for removing it
-  marker.addListener("click", () => {
-    removeMarker(marker);
-  });
-}
-
-// Function to remove a specific marker
 function removeMarker(marker) {
   marker.setMap(null);
   markers.splice(markers.indexOf(marker), 1);
 }
 
-// Recursive function to search for a place with increasing radius
 function searchPlace(query, location, radius) {
   const service = new google.maps.places.PlacesService(map);
 
-  // Perform text search first
   const textSearchRequest = {
     query: query,
     location: location,
-    radius: radius
+    radius: radius,
   };
 
   service.textSearch(textSearchRequest, (results, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
-      // Find the nearest place from text search results
+     
       let nearestPlace = findNearestPlace(results, location);
 
-      // If we find a result within the initial radius, use it
       if (nearestPlace) {
         addMarker(nearestPlace.geometry.location);
         map.setCenter(nearestPlace.geometry.location);
       }
     } else if (radius < 500000) {
-      // Increase the radius and try again if no results or search needs to cover more area
       searchPlace(query, location, radius + 10000);
     } else {
       alert('Place not found. Status: ' + status);
@@ -88,7 +110,6 @@ function searchPlace(query, location, radius) {
   });
 }
 
-// Function to find the nearest place from a list of places
 function findNearestPlace(places, location) {
   let nearestPlace = null;
   let nearestDistance = Infinity;
@@ -102,6 +123,10 @@ function findNearestPlace(places, location) {
   });
 
   return nearestPlace;
+}
+
+function handleLocationError(browserHasGeolocation, pos) {
+  alert(browserHasGeolocation ? "Error: The Geolocation service failed." : "Error: Enable Location/Unsupported");
 }
 
 initMap();
