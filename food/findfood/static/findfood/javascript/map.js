@@ -63,7 +63,6 @@ function addMarker(location) {
         const place = results[0]; // Get the first result
         const infoWindow = new google.maps.InfoWindow({
           content: `
-            <div><strong>${}
             <div><strong>${place.name}</strong></div>
             <div>Address: ${place.vicinity}</div>
             
