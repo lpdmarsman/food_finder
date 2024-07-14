@@ -6,6 +6,7 @@
     {% load static %}
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhS2ZIKqDWAjkXd30MG58j-LSPV4asKjs&libraries=places,geometry"></script>
     <link rel="stylesheet" href="{% static 'findfood/css/room.css' %}">
+    <link rel="shortcut icon" href="#">
 </head>
 <body>
     <div id="map"></div>
@@ -25,48 +26,7 @@
 
     <script src="{% static 'findfood/javascript/map.js' %}"></script>
     <script>
-        function getCookie(name) {
-            let matches = document.cookie.match(new RegExp(
-                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-            ));
-            return matches ? decodeURIComponent(matches[1]) : undefined;
-        }
 
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
-
-        const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/chat/'
-            + roomName
-            + '/'
-        );
-
-        chatSocket.onmessage = function(e) {
-            let username = getCookie('username');
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (username + ": " + data.message + '\n');
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
-            }
-        };
-
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        };
     </script>
 </body>
 </html>
