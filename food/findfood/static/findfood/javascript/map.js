@@ -45,16 +45,39 @@ function initMap() {
 }
 
 function addMarker(location) {
-  const marker = new google.maps.Marker({
-    position: location,
-    map: map,
-  });
-  markers.push(marker);
-
-  marker.addListener("click", () => {
-    removeMarker(marker);
-  });
-}
+    const marker = new google.maps.Marker({
+      position: location,
+      map: map,
+    });
+  
+    markers.push(marker);
+  
+    const service = new google.maps.places.PlacesService(map);
+    const request = {
+      location: location,
+      radius: '50'
+    };
+  
+    service.nearbySearch(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        const place = results[0]; // Get the first result
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div><strong>${place.name}</strong></div>
+            <div>City: ${place.vicinity}</div>
+            
+        
+          `,
+        });
+        infoWindow.open(map, marker);
+      } 
+       
+    });
+  
+    marker.addListener("click", () => {
+      removeMarker(marker);
+    });
+  }
 
 function removeMarker(marker) {
   marker.setMap(null);
