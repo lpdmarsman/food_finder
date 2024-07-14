@@ -10,6 +10,13 @@
     <input id="chat-message-submit" type="button" value="Send">
     {{ room_name|json_script:"room-name" }}
     <script>
+        function getCookie(name) {
+        let matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
         const chatSocket = new WebSocket(
@@ -21,8 +28,9 @@
         );
 
         chatSocket.onmessage = function(e) {
+            let username = getCookie('username');
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            document.querySelector('#chat-log').value += (username + ": " + data.message + '\n');
         };
 
         chatSocket.onclose = function(e) {
